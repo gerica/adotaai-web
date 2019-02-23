@@ -1,0 +1,10 @@
+{
+    "extends": "rallycoding",
+    "rules": {
+        "react/require-extension": "off",
+        "max-len": [
+            "error",
+            250
+        ]
+    }
+}
