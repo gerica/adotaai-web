@@ -42,7 +42,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "eslint-config-rallycoding": "^3.2.0",
-    "eslint-plugin-jsx-a11y": "^2.2.3"
+    "eslint-config-rallycoding": "^2.0.0"    
   }
 }
