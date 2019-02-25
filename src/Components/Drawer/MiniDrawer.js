@@ -6,7 +6,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
@@ -14,10 +13,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
@@ -26,7 +23,10 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
+import { MenuList } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
+import { Link } from 'react-router-dom';
+import routes from '../../Utils/routes';
 
 const drawerWidth = 240;
 
@@ -179,6 +179,13 @@ class MiniDrawer extends React.Component {
     this.setState({ anchorEl: null });
   };
 
+  onClickLink = route => {
+    routes.forEach(e => {
+      // eslint-disable-next-line no-unneeded-ternary
+      e.selected = e.path === route.path ? true : false;
+    });
+  };
+
   render() {
     const { classes, theme, children } = this.props;
     const { anchorEl, open } = this.state;
@@ -295,7 +302,38 @@ class MiniDrawer extends React.Component {
             </IconButton>
           </div>
           <Divider />
-          <List>
+          <MenuList>
+            {routes.map(prop => {
+              return (
+                <Link
+                  to={prop.path}
+                  style={{ textDecoration: 'none' }}
+                  onClick={() => this.onClickLink(prop)}
+                  key={prop.order}
+                >
+                  <MenuItem selected={prop.selected}>
+                    <ListItemIcon>
+                      <prop.icon />
+                    </ListItemIcon>
+                    <ListItemText primary={prop.sidebarName} />
+                  </MenuItem>
+                </Link>
+              );
+            })}
+          </MenuList>
+          {/* <List component="nav">
+            {menus.map(obj => (
+              <ListItem button key={obj.order}>
+                <ListItemIcon>
+                  <Link to={obj.to}>{obj.icon}</Link>
+                </ListItemIcon>
+                <ListItemText>
+                  <Link to={obj.to}>{obj.name}</Link>
+                </ListItemText>
+              </ListItem>
+            ))}
+          </List> */}
+          {/* <List>
             {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
               <ListItem button key={text}>
                 <ListItemIcon>
@@ -304,18 +342,8 @@ class MiniDrawer extends React.Component {
                 <ListItemText primary={text} />
               </ListItem>
             ))}
-          </List>
+          </List> */}
           <Divider />
-          <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
         </Drawer>
         {renderMenu}
         <main className={classes.content}>

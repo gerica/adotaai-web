@@ -2,7 +2,6 @@ import { firebaseDatabase } from '../Utils/FirebaseUtils';
 
 class FbUsuarioService {
   constructor() {
-    console.log(firebaseDatabase);
     this.ref = firebaseDatabase.ref('usuario');
   }
 
