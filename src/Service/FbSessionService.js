@@ -1,10 +1,10 @@
-import { firebaseDatabase } from '../Utils/FirebaseUtils';
+import firebase from '../Utils/FirebaseUtils';
 
 class FbSessionService {
   async signIn({ email, password }) {
     let user = null;
     try {
-      user = await this.firebaseDatabase
+      user = await firebase
         .auth()
         .createUserWithEmailAndPassword(email, password);
     } catch (err) {
@@ -16,7 +16,7 @@ class FbSessionService {
   async login({ username, password }) {
     let user = null;
     try {
-      user = await this.firebaseDatabase
+      user = await firebase
         .auth()
         .signInWithEmailAndPassword(username, password);
     } catch (err) {
@@ -29,7 +29,7 @@ class FbSessionService {
   async signOut() {
     if (this.isSignedIn()) {
       try {
-        await firebaseDatabase.auth().signOut();
+        await firebase.auth().signOut();
       } catch (err) {
         console.log(err);
         throw err;
@@ -38,7 +38,7 @@ class FbSessionService {
   }
 
   async update({ name }) {
-    const userRef = this.firebaseDatabase.auth().currentUser;
+    const userRef = firebase.auth().currentUser;
     try {
       await userRef.updateProfile({ displayName: name });
     } catch (err) {
@@ -47,11 +47,11 @@ class FbSessionService {
   }
 
   async refresh() {
-    const userRef = this.firebaseDatabase.auth().currentUser;
+    const userRef = firebase.auth().currentUser;
     try {
       // return await ref.getUser(uid);
       await userRef.reload();
-      return firebaseDatabase.auth().currentUser;
+      return firebase.auth().currentUser;
     } catch (err) {
       console.log(err);
       throw err;
@@ -59,7 +59,7 @@ class FbSessionService {
   }
 
   isSignedIn() {
-    return this.firebaseDatabase.auth().currentUser;
+    return firebase.auth().currentUser;
   }
 }
 

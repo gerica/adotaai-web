@@ -9,7 +9,13 @@
       }
     ],
     "react/prop-types": 0,
+    "react/no-unused-prop-types": 1,
+    "react/no-array-index-key": 0,    
+    "react/require-default-props": 0,
     "no-underscore-dangle": 0,
+    "no-restricted-syntax": 1,
+    "class-methods-use-this": 0,
+    "react/forbid-prop-types": 0,
     "import/imports-first": ["error", "absolute-first"],
     "import/newline-after-import": "error",
     "semi": [2, "always"]

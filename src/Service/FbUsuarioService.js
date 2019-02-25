@@ -1,8 +1,8 @@
-import { firebaseDatabase } from '../Utils/FirebaseUtils';
+import firebase from '../Utils/FirebaseUtils';
 
 class FbUsuarioService {
   constructor() {
-    this.ref = firebaseDatabase.ref('usuario');
+    this.ref = firebase.firestore().collection('usuario');
   }
 
   async save(payload) {

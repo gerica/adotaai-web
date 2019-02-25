@@ -1,31 +1,43 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import {
   Card,
   CardHeader,
-  CardMedia,
+  Button,
   CardContent,
   Typography,
   CardActions,
-  Collapse,
-  IconButton,
+  Icon,
   Avatar
 } from '@material-ui/core';
-import { MoreVert, Favorite, Share } from '@material-ui/icons';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import classnames from 'classnames';
+// import classnames from 'classnames';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+// import red from '@material-ui/core/colors/red';
 import { withStyles } from '@material-ui/core/styles';
-import red from '@material-ui/core/colors/red';
+
+import * as selectors from '../../Stores/Pet/selector';
+import PetActions from '../../Stores/Pet/actions';
+import CustomizedProgress from '../../Components/Progress/CustomizedProgress';
+import { getMiniatura } from '../../Assets/Images';
+import { ViewCards } from './styles';
+import CustomizedSnackbars from '../../Components/Snackbars/CustomizedSnackbars';
+import MyTheme from '../../muiTheme';
 
 const styles = theme => ({
   card: {
-    maxWidth: 400
+    maxWidth: 400,
+    width: 350,
+    height: 210,
+    margin: 5
   },
   media: {
     height: 0,
     paddingTop: '56.25%' // 16:9
   },
   actions: {
-    display: 'flex'
+    display: 'flex',
+    justifyContent: 'center'
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -38,7 +50,7 @@ const styles = theme => ({
     transform: 'rotate(180deg)'
   },
   avatar: {
-    backgroundColor: red[500]
+    // backgroundColor: red[500]
   }
 });
 
@@ -46,100 +58,123 @@ const styles = theme => ({
 // import { Container } from './styles';
 
 class HomePage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { expanded: false };
+  componentWillMount() {
+    const { fetchPetAbertoRequest, reset } = this.props;
+    fetchPetAbertoRequest();
+    reset();
+  }
+
+  getRacaDescricao(raca) {
+    if (raca) {
+      return raca.length > 100 ? `${raca.substr(0, 10)}...` : raca;
+    }
+    return '';
+  }
+
+  getAvatar(doador) {
+    const { classes } = this.props;
+    if (!doador) {
+      return <Icon type="MaterialIcons" name="pets" />;
+    }
+    const objImg = getMiniatura(doador);
+    if (objImg) {
+      return (
+        <Avatar
+          aria-label="Recipe"
+          className={classes.avatar}
+          src={objImg.img}
+        />
+      );
+    }
+    return <Icon type="MaterialIcons" name="pets" />;
   }
 
   handleExpandClick = () => {
     this.setState(state => ({ expanded: !state.expanded }));
   };
 
-  render() {
-    const { classes } = this.props;
-    const { expanded } = this.state;
+  renderCards() {
+    const { classes, listaPetAberto } = this.props;
 
-    return (
-      <Card className={classes.card}>
-        <CardHeader
-          avatar={
-            <Avatar aria-label="Recipe" className={classes.avatar}>
-              R
-            </Avatar>
-          }
-          action={
-            <IconButton>
-              <MoreVert />
-            </IconButton>
-          }
-          title="Shrimp and Chorizo Paella"
-          subheader="September 14, 2016"
-        />
-        <CardMedia
-          className={classes.media}
-          image="../../Assets/Images/racas/cao/Akita-2-100x100.jpg"
-          title="Paella dish"
-        />
-        <CardContent>
-          <Typography component="p">
-            This impressive paella is a perfect party dish and a fun meal to
-            cook together with your guests. Add 1 cup of frozen peas along with
-            the mussels, if you like.
-          </Typography>
-        </CardContent>
-        <CardActions className={classes.actions} disableActionSpacing>
-          <IconButton aria-label="Add to favorites">
-            <Favorite />
-          </IconButton>
-          <IconButton aria-label="Share">
-            <Share />
-          </IconButton>
-          <IconButton
-            className={classnames(classes.expand, {
-              [classes.expandOpen]: expanded
-            })}
-            onClick={this.handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="Show more"
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </CardActions>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
+    let cards;
+
+    if (listaPetAberto && listaPetAberto.length > 0) {
+      cards = listaPetAberto.map((obj, index) => (
+        <Card className={classes.card} key={index}>
+          <CardHeader
+            avatar={this.getAvatar(obj)}
+            title={this.getRacaDescricao(obj.raca)}
+          />
+
           <CardContent>
-            <Typography paragraph>Method:</Typography>
-            <Typography paragraph>
-              Heat 1/2 cup of the broth in a pot until simmering, add saffron
-              and set aside for 10 minutes.
-            </Typography>
-            <Typography paragraph>
-              Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet
-              over medium-high heat. Add chicken, shrimp and chorizo, and cook,
-              stirring occasionally until lightly browned, 6 to 8 minutes.
-              Transfer shrimp to a large plate and set aside, leaving chicken
-              and chorizo in the pan. Add pimentón, bay leaves, garlic,
-              tomatoes, onion, salt and pepper, and cook, stirring often until
-              thickened and fragrant, about 10 minutes. Add saffron broth and
-              remaining 4 1/2 cups chicken broth; bring to a boil.
-            </Typography>
-            <Typography paragraph>
-              Add rice and stir very gently to distribute. Top with artichokes
-              and peppers, and cook without stirring, until most of the liquid
-              is absorbed, 15 to 18 minutes. Reduce heat to medium-low, add
-              reserved shrimp and mussels, tucking them down into the rice, and
-              cook again without stirring, until mussels have opened and rice is
-              just tender, 5 to 7 minutes more. (Discard any mussels that don’t
-              open.)
-            </Typography>
-            <Typography>
-              Set aside off of the heat to let rest for 10 minutes, and then
-              serve.
+            <Typography component="p">Nome: {obj.nome}</Typography>
+            <Typography component="p">
+              Doador: {obj.user && obj.user.name}
             </Typography>
           </CardContent>
-        </Collapse>
-      </Card>
+          <CardActions className={classes.actions} disableActionSpacing>
+            <Button
+              variant="contained"
+              style={MyTheme.palette.success}
+              className={classes.button}
+            >
+              Ver
+              {/* This Button uses a Font Icon, see the installation instructions in the docs. */}
+              <Icon className={classes.rightIcon}>arrow_forward</Icon>
+            </Button>
+          </CardActions>
+        </Card>
+      ));
+    }
+
+    return cards;
+  }
+
+  render() {
+    const { loading, error } = this.props;
+
+    return (
+      <Fragment>
+        {/* <CustomizedSnackbars message="teste" variant="success" /> */}
+        {error ? (
+          <CustomizedSnackbars message={error.message} variant="error" />
+        ) : null}
+        {loading ? <CustomizedProgress /> : null}
+        <ViewCards>{this.renderCards()}</ViewCards>
+      </Fragment>
     );
   }
 }
 
-export default withStyles(styles)(HomePage);
+HomePage.propTypes = {
+  fetchPetAbertoRequest: PropTypes.func,
+  loading: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+  // listaPetAberto: PropTypes.checkPropTypes(PropTypes.array),
+  error: PropTypes.oneOfType([PropTypes.object, PropTypes.string])
+};
+
+HomePage.defaultProps = {
+  fetchPetAbertoRequest: null,
+  loading: null,
+  // listaPetAberto: [],
+  error: null
+};
+
+const mapStateToProps = createStructuredSelector({
+  listaPetAberto: selectors.selectorListaPetAberto(),
+  // form: selectors.selectorForm(),
+  loading: selectors.selectorLoading(),
+  error: selectors.selectorError()
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchPetAbertoRequest: () => dispatch(PetActions.fetchPetAbertoRequest()),
+  reset: () => dispatch(PetActions.resetRedux())
+});
+
+const HomePageRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(HomePage);
+
+export default withStyles(styles)(HomePageRedux);
