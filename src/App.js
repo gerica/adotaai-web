@@ -9,6 +9,7 @@ import PerfilPage from './Containers/Perfil';
 import HomePage from './Containers/Home';
 import configureStore from './Stores';
 import MyTheme from './muiTheme';
+import LoginPage from './Containers/Login';
 
 const { store, persistor } = configureStore();
 function App() {
@@ -21,6 +22,7 @@ function App() {
               {/* <Header /> */}
               <Switch>
                 <Route path="/perfil" component={PerfilPage} />
+                <Route path="/login" component={LoginPage} />
                 <Route path="/home" component={HomePage} />
                 <Route path="/" component={HomePage} />
                 {/* <Route path="/ccc" component={PerfilPage} /> */}

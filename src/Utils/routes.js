@@ -1,6 +1,7 @@
 import { Home, AccountCircle } from '@material-ui/icons';
 import HomePage from '../Containers/Home';
 import ProfilPage from '../Containers/Perfil';
+import LoginPage from '../Containers/Login';
 
 const Routes = [
   {
@@ -19,6 +20,15 @@ const Routes = [
     navbarName: 'Profile',
     icon: AccountCircle,
     component: ProfilPage,
+    selected: false
+  },
+  {
+    order: 3,
+    path: '/login',
+    sidebarName: 'Login',
+    navbarName: 'Login',
+    icon: AccountCircle,
+    component: LoginPage,
     selected: false
   }
 ];
