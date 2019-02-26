@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   Button,
   Avatar,
-  Divider,
   Paper,
   TextField,
   InputAdornment,
@@ -21,18 +20,33 @@ import * as selectors from '../../Stores/Session/selector';
 import { SpanButtonText } from './styles';
 
 const styles = theme => ({
+  meioTelaDiv: {
+    height: '50%',
+    width: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    content: '',
+    zIndex: 0,
+    backgroundColor: theme.palette.primary.main
+  },
+  mainCenter: {
+    width: '30%',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    '-webkitTransform': 'translate(-50%, -50%)',
+    transform: 'translate(-50%, -50%)'
+  },
   container: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: 450,
     borderRadius: 5,
     border: 'thin solid #888',
-    boxShadow: '1px 1px 1px grey'
-    // color: theme.palette.getContrastText(blue[500])
-
-    // whiteSpace: 'nowrap'
+    boxShadow: '1px 1px 1px grey',
+    zIndex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: '#fff',
+    padding: theme.spacing.unit
   },
   margin: {
     margin: theme.spacing.unit
@@ -47,9 +61,10 @@ const styles = theme => ({
   button: {
     margin: theme.spacing.unit
   },
-  buttonGoogle: {
-    margin: theme.spacing.unit,
-    backgroundColor: blue[600]
+  containerButtons: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   avatarIcone: {
     width: 28,
@@ -64,6 +79,15 @@ const styles = theme => ({
     height: 22
     // backgroundColor: '#fff'
   },
+  containerTitle: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  title: {
+    color: theme.palette.primary.main,
+    fontWeight: 'bold'
+  },
   rootPaper: {
     display: 'flex',
     flexDirection: 'column',
@@ -72,10 +96,15 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit * 2,
     paddingTop: theme.spacing.unit * 1,
     paddingBottom: theme.spacing.unit * 1
+  },
+  buttonEntrar: {
+    // margin: theme.spacing.unit,
+    backgroundColor: blue[600]
   }
 });
 
 const iconGoogle = require('../../Assets/Images/Google__G__Logo.png');
+const logo = require('../../Assets/Images/cao_gato_limpo_250x220.png');
 
 class LoginPage extends Component {
   constructor(props) {
@@ -103,54 +132,62 @@ class LoginPage extends Component {
     const { classes } = this.props;
     const { showPassword, password } = this.state;
     return (
-      <div className={classes.container}>
-        <Paper className={classes.rootPaper} elevation={1}>
-          <TextField
-            className={classes.margin}
-            label="Usuário"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <AccountCircle style={{ marginLeft: 11, marginRight: 12 }} />
-                </InputAdornment>
-              )
-            }}
-          />
-          <TextField
-            className={classNames(classes.margin, classes.textField)}
-            type={showPassword ? 'text' : 'password'}
-            label="Password"
-            value={password}
-            onChange={this.handleChange('password')}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="Toggle password visibility"
-                    onClick={this.handleClickShowPassword}
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-          <Button variant="outlined" className={classes.button}>
-            Entrar
-          </Button>
-        </Paper>
-        <Divider />
-        <div>
-          <Button variant="outlined" className={classes.buttonGoogle}>
-            <div className={classes.avatarIcone}>
-              <Avatar
-                alt="Login Google"
-                src={iconGoogle}
-                className={classes.avatar}
-              />
+      <div style={{ display: 'flex' }}>
+        <div className={classes.meioTelaDiv} />
+        <div className={classes.mainCenter}>
+          <div className={classes.container}>
+            <div className={classes.containerTitle}>
+              <img src={logo} alt="Adota Ai" />
+              <h1 className={classes.title}>Adota ai!</h1>
             </div>
-            <SpanButtonText>Google</SpanButtonText>
-          </Button>
+            <Paper className={classes.rootPaper} elevation={2}>
+              <TextField
+                className={classes.margin}
+                label="Usuário"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <AccountCircle
+                        style={{ marginLeft: 11, marginRight: 12 }}
+                      />
+                    </InputAdornment>
+                  )
+                }}
+              />
+              <TextField
+                className={classNames(classes.margin, classes.textField)}
+                type={showPassword ? 'text' : 'password'}
+                label="Senha"
+                value={password}
+                onChange={this.handleChange('password')}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="Toggle password visibility"
+                        onClick={this.handleClickShowPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Paper>
+            {/* <Divider /> */}
+            <div className={classes.containerButtons}>
+              <Button variant="outlined">
+                <Avatar
+                  alt="Login Google"
+                  src={iconGoogle}
+                  className={classes.avatar}
+                />
+              </Button>
+              <Button variant="outlined" className={classes.buttonEntrar}>
+                <SpanButtonText>Entrar</SpanButtonText>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     );
