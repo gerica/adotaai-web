@@ -11,7 +11,6 @@ class FbUsuarioService {
       const getUser = await docUser.get();
       return { ...getUser.data() };
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
@@ -25,7 +24,6 @@ class FbUsuarioService {
     try {
       await this.ref.doc(idDoc).update(dados);
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
@@ -49,7 +47,6 @@ class FbUsuarioService {
           throw new Error('Existe mais de um usuário com o id informado');
       }
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
@@ -63,7 +60,6 @@ class FbUsuarioService {
       }
       return null;
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }

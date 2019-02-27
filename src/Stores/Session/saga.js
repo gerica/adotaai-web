@@ -84,7 +84,7 @@ function* signInGoogleRequest() {
     ]);
     let userCustom = yield call(
       [FbUsuarioService, FbUsuarioService.getByIdUser],
-      user
+      { ...user, uid: user.providerData[0].uid }
     );
     if (!userCustom) {
       userCustom = yield* criarUserCustom(user);
