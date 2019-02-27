@@ -104,15 +104,18 @@ class CustomizedSnackbars extends React.Component {
         variant={variant}
         className={classes.margin}
         message={message}
+        onClose={this.handleClose}
       />
     );
   }
 
   handleClose = (event, reason) => {
+    const { onCleanMsg } = this.props;
     if (reason === 'clickaway') {
       return;
     }
 
+    onCleanMsg();
     this.setState({ open: false });
   };
 
@@ -139,7 +142,12 @@ class CustomizedSnackbars extends React.Component {
 CustomizedSnackbars.propTypes = {
   classes: PropTypes.object.isRequired,
   message: PropTypes.string,
-  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired
+  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
+  onCleanMsg: PropTypes.func
+};
+
+CustomizedSnackbars.defaultProps = {
+  onCleanMsg: () => {}
 };
 
 export default withStyles(styles2)(CustomizedSnackbars);

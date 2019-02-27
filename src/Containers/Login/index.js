@@ -1,23 +1,26 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  Avatar,
-  Paper,
-  TextField,
-  InputAdornment,
-  IconButton
-} from '@material-ui/core';
-import { AccountCircle, VisibilityOff, Visibility } from '@material-ui/icons';
-import classNames from 'classnames';
+import { Button, Avatar, Paper, CircularProgress } from '@material-ui/core';
+import { Field, reduxForm } from 'redux-form';
+// import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import blue from '@material-ui/core/colors/blue';
+import { Redirect } from 'react-router-dom';
 
 import SessionActions from '../../Stores/Session/actions';
 import * as selectors from '../../Stores/Session/selector';
 import { SpanButtonText } from './styles';
+import {
+  createValidator,
+  required,
+  email,
+  minLengthPassword
+} from '../../Utils/validation';
+import TextInputBase from '../../Components/Form/TextInputBase';
+import CustomizedSnackbars from '../../Components/Snackbars/CustomizedSnackbars';
+import { ROUTER_HOME } from '../../Utils/constants';
 
 const styles = theme => ({
   meioTelaDiv: {
@@ -100,6 +103,18 @@ const styles = theme => ({
   buttonEntrar: {
     // margin: theme.spacing.unit,
     backgroundColor: blue[600]
+  },
+  wrapper: {
+    margin: theme.spacing.unit,
+    position: 'relative'
+  },
+  buttonProgress: {
+    color: blue[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12
   }
 });
 
@@ -110,10 +125,34 @@ class LoginPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      password: '',
       showPassword: false
     };
+
+    this.onSubmit = this.onSubmit.bind(this);
   }
+
+  shouldComponentUpdate(nextProps) {
+    const { user, onResetRedux, reset } = nextProps;
+
+    if (user) {
+      onResetRedux();
+      reset();
+      // navigation.navigate('homeStack', { msg: 'Login efetuado com sucesso.', user });
+      // return false;
+    }
+    return true;
+  }
+
+  onSubmit(values) {
+    const { onLogin } = this.props;
+    onLogin(values);
+    // console.log(values);
+  }
+
+  onSignInGoogle = () => {
+    const { onSignInGoogleRequest } = this.props;
+    onSignInGoogleRequest();
+  };
 
   handleGoogleLogin = () => {
     const { onSignInGoogleRequest } = this.props;
@@ -129,64 +168,84 @@ class LoginPage extends Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { showPassword, password } = this.state;
+    const {
+      classes,
+      handleSubmit,
+      loading,
+      errorObj,
+      onResetRedux,
+      user
+    } = this.props;
+    const { showPassword } = this.state;
+
+    if (user) {
+      return <Redirect to={ROUTER_HOME} />;
+    }
+
     return (
       <div style={{ display: 'flex' }}>
+        {errorObj ? (
+          <CustomizedSnackbars
+            message={errorObj.message}
+            variant="error"
+            onCleanMsg={onResetRedux}
+          />
+        ) : null}
         <div className={classes.meioTelaDiv} />
         <div className={classes.mainCenter}>
           <div className={classes.container}>
+            {/* <form onSubmit={handleSubmit(this.onSubmit)}> */}
             <div className={classes.containerTitle}>
               <img src={logo} alt="Adota Ai" />
               <h1 className={classes.title}>Adota ai!</h1>
             </div>
             <Paper className={classes.rootPaper} elevation={2}>
-              <TextField
-                className={classes.margin}
-                label="Usuário"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <AccountCircle
-                        style={{ marginLeft: 11, marginRight: 12 }}
-                      />
-                    </InputAdornment>
-                  )
-                }}
+              <Field
+                name="email"
+                label="E-mail"
+                adornment
+                required
+                component={TextInputBase}
               />
-              <TextField
-                className={classNames(classes.margin, classes.textField)}
-                type={showPassword ? 'text' : 'password'}
+              <Field
+                name="password"
                 label="Senha"
-                value={password}
-                onChange={this.handleChange('password')}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="Toggle password visibility"
-                        onClick={this.handleClickShowPassword}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
+                adornment
+                showPassword={showPassword}
+                typeField="password"
+                handleClickShowPassword={this.handleClickShowPassword}
+                required
+                component={TextInputBase}
               />
             </Paper>
             {/* <Divider /> */}
             <div className={classes.containerButtons}>
-              <Button variant="outlined">
+              <Button variant="outlined" onClick={this.onSignInGoogle}>
                 <Avatar
                   alt="Login Google"
                   src={iconGoogle}
                   className={classes.avatar}
                 />
               </Button>
-              <Button variant="outlined" className={classes.buttonEntrar}>
-                <SpanButtonText>Entrar</SpanButtonText>
-              </Button>
+              <div className={classes.wrapper}>
+                <Button
+                  variant="contained"
+                  className={classes.buttonEntrar}
+                  disabled={loading}
+                  onClick={handleSubmit(this.onSubmit)}
+                >
+                  {/* Entrar */}
+                  <SpanButtonText>Entrar</SpanButtonText>
+                </Button>
+                {loading && (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                )}
+              </div>
             </div>
+            {/* </form> */}
           </div>
         </div>
       </div>
@@ -196,12 +255,15 @@ class LoginPage extends Component {
 
 LoginPage.propTypes = {
   classes: PropTypes.object.isRequired,
-  onSignInGoogleRequest: PropTypes.func.isRequired
+  onSignInGoogleRequest: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  errorObj: PropTypes.oneOfType([PropTypes.object, PropTypes.string])
+  // user: PropTypes.oneOfType([PropTypes.object, PropTypes.string])
 };
 
 const mapStateToProps = createStructuredSelector({
   loading: selectors.selectorLoading(),
-  error: selectors.selectorError(),
+  errorObj: selectors.selectorError(),
   user: selectors.selectorSessionUser()
 });
 
@@ -212,9 +274,15 @@ const mapDispatchToProps = dispatch => ({
   onResetRedux: () => dispatch(SessionActions.resetRedux())
 });
 
+const validate = createValidator({
+  email: [required, email],
+  password: [required, minLengthPassword]
+});
+
+const reduxFormLogin = reduxForm({ form: 'loginPage', validate })(LoginPage);
 const LoginPageRedux = connect(
   mapStateToProps,
   mapDispatchToProps
-)(LoginPage);
+)(reduxFormLogin);
 
 export default withStyles(styles)(LoginPageRedux);

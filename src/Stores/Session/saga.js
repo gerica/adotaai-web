@@ -63,7 +63,6 @@ function* loginRequest(payload) {
       [FbUsuarioService, FbUsuarioService.getByIdUser],
       user
     );
-    // eslint-disable-next-line no-underscore-dangle
     const newUser = { ...user._user, userCustom };
     user.userCustom = userCustom;
 

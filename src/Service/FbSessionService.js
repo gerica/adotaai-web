@@ -20,7 +20,6 @@ class FbSessionService {
         .auth()
         .signInWithEmailAndPassword(username, password);
     } catch (err) {
-      console.log(err);
       throw err;
     }
     return user;
@@ -31,7 +30,6 @@ class FbSessionService {
       try {
         await firebase.auth().signOut();
       } catch (err) {
-        console.log(err);
         throw err;
       }
     }
@@ -53,7 +51,6 @@ class FbSessionService {
       await userRef.reload();
       return firebase.auth().currentUser;
     } catch (err) {
-      console.log(err);
       throw err;
     }
   }

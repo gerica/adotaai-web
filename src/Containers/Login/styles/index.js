@@ -19,8 +19,8 @@ export const SpanLabel = styled.span`
 export const SpanButtonText = styled.span`
   display: inline-block;
   vertical-align: middle;
-  padding-left: 42px;
-  padding-right: 35px;
+  /* padding-left: 42px;
+  padding-right: 35px; */
   font-size: 14px;
   color: white;
   font-weight: bold;

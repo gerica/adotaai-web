@@ -10,6 +10,12 @@ import HomePage from './Containers/Home';
 import configureStore from './Stores';
 import MyTheme from './muiTheme';
 import LoginPage from './Containers/Login';
+import {
+  ROUTER_PERFIL,
+  ROUTER_LOGIN,
+  ROUTER_HOME,
+  ROUTER_DEFAULT
+} from './Utils/constants';
 
 const { store, persistor } = configureStore();
 function App() {
@@ -21,10 +27,10 @@ function App() {
             <MiniDrawer>
               {/* <Header /> */}
               <Switch>
-                <Route path="/perfil" component={PerfilPage} />
-                <Route path="/login" component={LoginPage} />
-                <Route path="/home" component={HomePage} />
-                <Route path="/" component={HomePage} />
+                <Route path={ROUTER_PERFIL} component={PerfilPage} />
+                <Route path={ROUTER_LOGIN} component={LoginPage} />
+                <Route path={ROUTER_HOME} component={HomePage} />
+                <Route path={ROUTER_DEFAULT} component={HomePage} />
                 {/* <Route path="/ccc" component={PerfilPage} /> */}
               </Switch>
             </MiniDrawer>

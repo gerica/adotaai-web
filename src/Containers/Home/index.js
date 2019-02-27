@@ -78,7 +78,6 @@ class HomePage extends Component {
     }
     const objImg = getMiniatura(doador);
     if (objImg) {
-      console.log(objImg.img);
       return (
         <Avatar
           aria-label="Recipe"
