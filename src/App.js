@@ -14,7 +14,8 @@ import {
   ROUTER_PERFIL,
   ROUTER_LOGIN,
   ROUTER_HOME,
-  ROUTER_DEFAULT
+  ROUTER_DEFAULT,
+  ROUTER_LOGIN_PARAMS
 } from './Utils/constants';
 
 const { store, persistor } = configureStore();
@@ -28,9 +29,10 @@ function App() {
               {/* <Header /> */}
               <Switch>
                 <Route path={ROUTER_PERFIL} component={PerfilPage} />
-                <Route path={ROUTER_LOGIN} component={LoginPage} />
+                <Route exact path={ROUTER_LOGIN} component={LoginPage} />
+                <Route path={ROUTER_LOGIN_PARAMS} component={LoginPage} />
                 <Route path={ROUTER_HOME} component={HomePage} />
-                <Route path={ROUTER_DEFAULT} component={HomePage} />
+                <Route exact path={ROUTER_DEFAULT} component={HomePage} />
                 {/* <Route path="/ccc" component={PerfilPage} /> */}
               </Switch>
             </MiniDrawer>

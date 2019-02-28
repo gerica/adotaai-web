@@ -16,7 +16,8 @@ import {
   createValidator,
   required,
   email,
-  minLengthPassword
+  minLengthPassword,
+  matchPassword
 } from '../../Utils/validation';
 import TextInputBase from '../../Components/Form/TextInputBase';
 import CustomizedSnackbars from '../../Components/Snackbars/CustomizedSnackbars';
@@ -112,7 +113,7 @@ const styles = theme => ({
     color: blue[500],
     position: 'absolute',
     top: '50%',
-    left: '50%',
+    left: '75%',
     marginTop: -12,
     marginLeft: -12
   }
@@ -125,10 +126,19 @@ class LoginPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showPassword: false
+      showPassword: false,
+      showLogin: true
     };
 
     this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  componentWillMount() {
+    const { match } = this.props;
+    const { showSignin } = match.params;
+    if (showSignin) {
+      this.setState({ showLogin: false });
+    }
   }
 
   shouldComponentUpdate(nextProps) {
@@ -144,8 +154,13 @@ class LoginPage extends Component {
   }
 
   onSubmit(values) {
-    const { onLogin } = this.props;
-    onLogin(values);
+    const { onLogin, onSignIn } = this.props;
+    const { showLogin } = this.state;
+    if (showLogin) {
+      onLogin(values);
+    } else {
+      onSignIn(values);
+    }
     // console.log(values);
   }
 
@@ -167,20 +182,20 @@ class LoginPage extends Component {
     this.setState(state => ({ showPassword: !state.showPassword }));
   };
 
-  render() {
+  handleToggleShowLogin = () => {
+    const { showLogin } = this.state;
+    this.setState({ showLogin: !showLogin });
+  };
+
+  renderLogin() {
     const {
       classes,
       handleSubmit,
       loading,
       errorObj,
-      onResetRedux,
-      user
+      onResetRedux
     } = this.props;
     const { showPassword } = this.state;
-
-    if (user) {
-      return <Redirect to={ROUTER_HOME} />;
-    }
 
     return (
       <div style={{ display: 'flex' }}>
@@ -229,12 +244,17 @@ class LoginPage extends Component {
               </Button>
               <div className={classes.wrapper}>
                 <Button
+                  className={classes.button}
+                  onClick={this.handleToggleShowLogin}
+                >
+                  Criar Usuário
+                </Button>
+                <Button
                   variant="contained"
                   className={classes.buttonEntrar}
                   disabled={loading}
                   onClick={handleSubmit(this.onSubmit)}
                 >
-                  {/* Entrar */}
                   <SpanButtonText>Entrar</SpanButtonText>
                 </Button>
                 {loading && (
@@ -251,11 +271,122 @@ class LoginPage extends Component {
       </div>
     );
   }
+
+  renderSigin() {
+    const {
+      classes,
+      handleSubmit,
+      loading,
+      errorObj,
+      onResetRedux
+    } = this.props;
+    const { showPassword } = this.state;
+    // const loading = true;
+    return (
+      <div style={{ display: 'flex' }}>
+        {errorObj ? (
+          <CustomizedSnackbars
+            message={errorObj.message}
+            variant="error"
+            onCleanMsg={onResetRedux}
+          />
+        ) : null}
+        <div className={classes.meioTelaDiv} />
+        <div className={classes.mainCenter}>
+          <div className={classes.container}>
+            <div className={classes.containerTitle}>
+              <img src={logo} alt="Adota Ai" />
+              <h1 className={classes.title}>Adota ai!</h1>
+            </div>
+            <Paper className={classes.rootPaper} elevation={2}>
+              <Field
+                name="name"
+                label="Nome"
+                adornment
+                required
+                component={TextInputBase}
+              />
+              <Field
+                name="email"
+                label="E-mail"
+                adornment
+                required
+                component={TextInputBase}
+              />
+              <Field
+                name="password"
+                label="Senha"
+                adornment
+                showPassword={showPassword}
+                typeField="password"
+                handleClickShowPassword={this.handleClickShowPassword}
+                required
+                component={TextInputBase}
+              />
+              <Field
+                name="passwordConfirm"
+                label="Confirmar Senha"
+                adornment
+                showPassword={showPassword}
+                typeField="password"
+                handleClickShowPassword={this.handleClickShowPassword}
+                required
+                component={TextInputBase}
+              />
+            </Paper>
+            {/* <Divider /> */}
+            <div className={classes.containerButtons}>
+              <div />
+              <div className={classes.wrapper}>
+                <Button
+                  className={classes.button}
+                  onClick={this.handleToggleShowLogin}
+                >
+                  Voltar
+                </Button>
+                <Button
+                  variant="contained"
+                  className={classes.buttonEntrar}
+                  disabled={loading}
+                  onClick={handleSubmit(this.onSubmit)}
+                >
+                  {/* Entrar */}
+                  <SpanButtonText>Salvar</SpanButtonText>
+                </Button>
+                {loading && (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                )}
+              </div>
+            </div>
+            {/* </form> */}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  render() {
+    const { user } = this.props;
+
+    if (user) {
+      return <Redirect to={ROUTER_HOME} />;
+    }
+
+    const { showLogin } = this.state;
+    if (showLogin) {
+      return this.renderLogin();
+    }
+    return this.renderSigin();
+  }
 }
 
 LoginPage.propTypes = {
   classes: PropTypes.object.isRequired,
   onSignInGoogleRequest: PropTypes.func.isRequired,
+  onSignIn: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   errorObj: PropTypes.oneOfType([PropTypes.object, PropTypes.string])
   // user: PropTypes.oneOfType([PropTypes.object, PropTypes.string])
@@ -271,12 +402,15 @@ const mapDispatchToProps = dispatch => ({
   onLogin: payload =>
     dispatch(SessionActions.loginRequest(payload.email, payload.password)),
   onSignInGoogleRequest: () => dispatch(SessionActions.signInGoogleRequest()),
-  onResetRedux: () => dispatch(SessionActions.resetRedux())
+  onResetRedux: () => dispatch(SessionActions.resetRedux()),
+  onSignIn: payload => dispatch(SessionActions.signInRequest(payload))
 });
 
 const validate = createValidator({
+  name: [required],
   email: [required, email],
-  password: [required, minLengthPassword]
+  password: [required, minLengthPassword],
+  passwordConfirm: [required, matchPassword]
 });
 
 const reduxFormLogin = reduxForm({ form: 'loginPage', validate })(LoginPage);

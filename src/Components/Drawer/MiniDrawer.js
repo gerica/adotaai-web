@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { fade } from '@material-ui/core/styles/colorManipulator';
@@ -23,11 +23,12 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
-import { MenuList } from '@material-ui/core';
+import { MenuList, Avatar } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
+import { deepOrange } from '@material-ui/core/colors';
 
 import * as selectorsSession from '../../Stores/Session/selector';
 import routes from '../../Utils/routes';
@@ -156,6 +157,13 @@ const styles = theme => ({
     [theme.breakpoints.up('md')]: {
       display: 'none'
     }
+  },
+  orangeAvatar: {
+    // margin: 10,
+    width: 30,
+    height: 30,
+    color: '#fff',
+    backgroundColor: deepOrange[500]
   }
 });
 
@@ -192,7 +200,6 @@ class MiniDrawer extends React.Component {
   };
 
   onSignOutRequest = () => {
-    console.log('logout');
     const { onSignOutRequest } = this.props;
     onSignOutRequest();
   };
@@ -204,9 +211,18 @@ class MiniDrawer extends React.Component {
     const menus = [];
 
     if (user) {
+      const routePerfil = routes.find(e => e.order === 2);
       menus.push(
-        <MenuItem key={1} onClick={this.handleMenuClose}>
-          Profile
+        <MenuItem
+          key={3}
+          onClick={() => {
+            this.onClickLink(routePerfil);
+            this.handleMenuClose();
+          }}
+          component={Link}
+          to={routePerfil.path}
+        >
+          Perfil
         </MenuItem>
       );
       menus.push(
@@ -237,7 +253,15 @@ class MiniDrawer extends React.Component {
         </MenuItem>
       );
       menus.push(
-        <MenuItem key={4} onClick={this.handleMenuClose}>
+        <MenuItem
+          key={4}
+          onClick={() => {
+            this.onClickLink(routeLogin);
+            this.handleMenuClose();
+          }}
+          component={Link}
+          to={`${routeLogin.path}/true`}
+        >
           Sigin
         </MenuItem>
       );
@@ -294,8 +318,32 @@ class MiniDrawer extends React.Component {
     );
   }
 
+  renderAvatar() {
+    const { user, classes } = this.props;
+    // console.log(user);
+    if (user) {
+      if (user.photoURL) {
+        return (
+          <Avatar
+            aria-label="Recipe"
+            style={{ width: 30, height: 30 }}
+            src={user.photoURL}
+          />
+        );
+      }
+      if (user.userCustom) {
+        return (
+          <Avatar className={classes.orangeAvatar}>
+            {user.userCustom.name.substr(0, 1)}
+          </Avatar>
+        );
+      }
+    }
+    return <AccountCircle />;
+  }
+
   render() {
-    const { classes, theme, children } = this.props;
+    const { classes, theme, children, user } = this.props;
     const { anchorEl, open } = this.state;
     const isMenuOpen = Boolean(anchorEl);
 
@@ -334,7 +382,7 @@ class MiniDrawer extends React.Component {
                 <SearchIcon />
               </div>
               <InputBase
-                placeholder="Search…"
+                placeholder="Pesquisar"
                 classes={{
                   root: classes.inputRoot,
                   input: classes.inputInput
@@ -343,23 +391,27 @@ class MiniDrawer extends React.Component {
             </div>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              <IconButton color="inherit">
-                <Badge badgeContent={4} color="secondary">
-                  <MailIcon />
-                </Badge>
-              </IconButton>
-              <IconButton color="inherit">
-                <Badge badgeContent={17} color="secondary">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
+              {user ? (
+                <Fragment>
+                  <IconButton color="inherit">
+                    <Badge badgeContent={4} color="secondary">
+                      <MailIcon />
+                    </Badge>
+                  </IconButton>
+                  <IconButton color="inherit">
+                    <Badge badgeContent={17} color="secondary">
+                      <NotificationsIcon />
+                    </Badge>
+                  </IconButton>
+                </Fragment>
+              ) : null}
               <IconButton
                 aria-owns={isMenuOpen ? 'material-appbar' : undefined}
                 aria-haspopup="true"
                 onClick={this.handleProfileMenuOpen}
                 color="inherit"
               >
-                <AccountCircle />
+                {this.renderAvatar()}
               </IconButton>
             </div>
             <div className={classes.sectionMobile}>

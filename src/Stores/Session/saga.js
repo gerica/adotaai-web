@@ -13,7 +13,7 @@ function* criarUserCustom(user, payload) {
     id: user.uid || user.id,
     name: user.displayName || user.name,
     email: user.email,
-    contato: payload && payload.contato,
+    contato: (payload && payload.contato) || null,
     photo: user.photo || user.photoURL
   };
   return yield call([FbUsuarioService, FbUsuarioService.save], docUser);
@@ -106,7 +106,7 @@ function* signInRequest({ payload }) {
     // console.log({ payload });
     yield call([FbSessionService, FbSessionService.signIn], payload);
     yield call([FbSessionService, FbSessionService.update], payload);
-    const { _user } = yield call([FbSessionService, FbSessionService.refresh]);
+    const _user = yield call([FbSessionService, FbSessionService.refresh]);
     const userCustom = yield* criarUserCustom(_user, payload);
     _user.userCustom = userCustom;
 

@@ -97,6 +97,17 @@ class CustomizedSnackbars extends React.Component {
     open: true
   };
 
+  // componentDidMount() {
+  //   const { onCleanMsg } = this.props;
+  //   onCleanMsg();
+  // }
+
+  // componentWillUnmount() {
+  //   console.log('chamou');
+  //   const { onCleanMsg } = this.props;
+  //   onCleanMsg();
+  // }
+
   getTypeSnackbar() {
     const { classes, message, variant } = this.props;
     return (
