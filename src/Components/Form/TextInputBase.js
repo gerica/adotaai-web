@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import {
   InputAdornment,
   IconButton,
@@ -68,14 +69,20 @@ class TextInputBase extends Component {
     const {
       classes,
       label,
+      className,
       input: { value, ...inputProps },
       meta: { touched, error }
     } = this.props;
+
     const idComponent = `component-${label}`;
     const hasError = touched && (error && error.length > 0);
 
     return (
-      <FormControl className={classes.margin} error={hasError}>
+      <FormControl
+        // className={classes.margin}
+        className={classNames(classes.margin, className)}
+        error={hasError}
+      >
         <InputLabel htmlFor={idComponent}>{label}</InputLabel>
         <Input
           id={idComponent}
@@ -104,6 +111,7 @@ class TextInputBase extends Component {
 
 TextInputBase.propTypes = {
   classes: PropTypes.object.isRequired,
+  className: PropTypes.string,
   showPassword: PropTypes.bool,
   typeField: PropTypes.string,
   adornment: PropTypes.bool,
@@ -114,6 +122,7 @@ TextInputBase.defaultProps = {
   showPassword: false,
   typeField: 'text',
   adornment: false,
+  className: '',
   handleClickShowPassword: () => {}
 };
 

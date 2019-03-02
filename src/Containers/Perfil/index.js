@@ -27,6 +27,8 @@ import { ROUTER_HOME } from '../../Utils/constants';
 import TextInputBase from '../../Components/Form/TextInputBase';
 import { createValidator, required, phone } from '../../Utils/validation';
 import CustomizedSnackbars from '../../Components/Snackbars/CustomizedSnackbars';
+import ListaPetPage from './listaPets';
+import CadastroPetPage from './cadastroPet';
 
 function TabContainer(props) {
   const { children } = props;
@@ -219,8 +221,16 @@ class PerfilPage extends React.Component {
           </Tabs>
         </AppBar>
         {value === 0 && <TabContainer>{this.renderInfoUser()}</TabContainer>}
-        {value === 1 && <TabContainer>Item Two</TabContainer>}
-        {value === 2 && <TabContainer>Item Three</TabContainer>}
+        {value === 1 && (
+          <TabContainer>
+            <ListaPetPage />
+          </TabContainer>
+        )}
+        {value === 2 && (
+          <TabContainer>
+            <CadastroPetPage />
+          </TabContainer>
+        )}
         {this.renderDialogEdit()}
       </div>
     );
