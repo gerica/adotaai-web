@@ -12,6 +12,7 @@ const { Types, Creators } = createActions({
   // ATUALIZAR PET
   updateDoacaoRequest: ['payload'],
   updateDoacaoInfoRequest: ['payload'],
+  updateDoacaoInfoSuccess: ['done'],
 
   // RECUPERAR PET POR USUÁRIO
   fetchPetPorUserRequest: ['user'],

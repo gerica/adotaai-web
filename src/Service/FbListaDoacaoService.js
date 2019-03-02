@@ -38,7 +38,6 @@ class FbListaDoacaoService {
 
       const doacaoDoc = await this.ref.doc(doacao.id);
       await doacaoDoc.update({ status });
-      console.log('alterado');
     } catch (err) {
       throw err;
     }

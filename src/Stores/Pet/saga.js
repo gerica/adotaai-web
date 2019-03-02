@@ -51,6 +51,7 @@ function* updateDoacaoInfoRequest({ payload }) {
     // yield call([FbListaDoacaoService, FbListaDoacaoService.save], payload);
     // const values = yield call([FbListaDoacaoService, FbListaDoacaoService.fetchAll]);
     // yield put(PetActions.fetchPetAbertoRequest(values));
+    yield put(PetActions.updateDoacaoInfoSuccess(true));
     yield put(PetActions.success(MSG_001));
   } catch (err) {
     yield put(PetActions.failure(err));

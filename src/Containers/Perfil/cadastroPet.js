@@ -118,6 +118,8 @@ class CadastroPetPage extends Component {
       vermifugado: values.vermifugado.value,
       porte: values.porte.value,
       raca: values.raca.value,
+      nome: values.nome,
+      resumo: values.resumo,
       status: 'aberto'
     };
     // console.log({ newObj });

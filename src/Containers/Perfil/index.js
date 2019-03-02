@@ -197,7 +197,7 @@ class PerfilPage extends React.Component {
   }
 
   render() {
-    const { classes, user } = this.props;
+    const { classes, user, error } = this.props;
     const { value, stateMessage } = this.state;
 
     if (!user) {
@@ -212,6 +212,9 @@ class PerfilPage extends React.Component {
             variant="success"
             onCleanMsg={this.onHandleChangeMessage}
           />
+        ) : null}
+        {error ? (
+          <CustomizedSnackbars message={error.message} variant="error" />
         ) : null}
         <AppBar position="static">
           <Tabs value={value} onChange={this.handleChange}>

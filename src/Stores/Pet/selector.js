@@ -28,6 +28,11 @@ const selectorMessage = () =>
     storePet,
     store => store.message
   );
+const selectorDone = () =>
+  createSelector(
+    storePet,
+    store => store.done
+  );
 
 const selectorForm = () =>
   createSelector(
@@ -41,5 +46,6 @@ export {
   selectorError,
   selectorMessage,
   selectorListaPetPorUser,
-  selectorListaPetAberto
+  selectorListaPetAberto,
+  selectorDone
 };

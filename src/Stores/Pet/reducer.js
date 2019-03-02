@@ -6,7 +6,8 @@ const INITIAL_STATE = {
   listaPetPorUser: null,
   listaPetAberto: null,
   error: null,
-  message: null
+  message: null,
+  done: false
 };
 
 // Geral
@@ -38,13 +39,19 @@ export const fetchPetPorUserSuccess = (
 export const resetRedux = (state = INITIAL_STATE) => ({
   ...state,
   error: null,
-  message: null
+  message: null,
+  done: false
 });
 
 export const fetchPetAbertoSuccess = (
   state = INITIAL_STATE,
   { listaPetAberto }
 ) => ({ ...state, listaPetAberto, loading: false });
+
+export const updateDoacaoInfoSuccess = (state = INITIAL_STATE, { done }) => ({
+  ...state,
+  done
+});
 
 const perfilReducer = createReducer(INITIAL_STATE, {
   // RESET
@@ -56,6 +63,7 @@ const perfilReducer = createReducer(INITIAL_STATE, {
   [PetTypes.CADASTRO_DOACAO_REQUEST]: cadastroDoacaoRequest,
   [PetTypes.UPDATE_DOACAO_REQUEST]: request,
   [PetTypes.UPDATE_DOACAO_INFO_REQUEST]: request,
+  [PetTypes.UPDATE_DOACAO_INFO_SUCCESS]: updateDoacaoInfoSuccess,
 
   // Fetch pet por usuario
   [PetTypes.FETCH_PET_POR_USER_REQUEST]: request,
