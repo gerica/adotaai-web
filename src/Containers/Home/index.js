@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -8,7 +9,11 @@ import {
   Typography,
   CardActions,
   Icon,
-  Avatar
+  Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@material-ui/core';
 // import classnames from 'classnames';
 import { connect } from 'react-redux';
@@ -58,6 +63,14 @@ const styles = theme => ({
 // import { Container } from './styles';
 
 class HomePage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      selectedObj: null
+    };
+  }
+
   componentWillMount() {
     const { fetchPetAbertoRequest, reset } = this.props;
     fetchPetAbertoRequest();
@@ -93,6 +106,80 @@ class HomePage extends Component {
     this.setState(state => ({ expanded: !state.expanded }));
   };
 
+  handleClickOpen = obj => {
+    this.setState({ open: true, selectedObj: obj });
+  };
+
+  handleClose = () => {
+    this.setState({ open: false, selectedObj: null });
+  };
+
+  handleWhatsApp = contato => {
+    if (contato) {
+      const text = 'Gostaria de adotar seu pet.';
+      const link = `https://api.whatsapp.com/send?phone=55${contato}&text=${text}`;
+      window.open(link, '_blank');
+    }
+  };
+
+  renderDialogView() {
+    const { classes } = this.props;
+    const { open, selectedObj } = this.state;
+
+    if (!selectedObj) {
+      return null;
+    }
+
+    const { user } = selectedObj;
+    let contato;
+    if (user) {
+      contato = user.contato;
+    }
+
+    return (
+      <div>
+        <Dialog
+          open={open}
+          onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">Adotar esse pet.</DialogTitle>
+          <DialogContent>
+            <Card className={classes.card}>
+              <CardHeader
+                avatar={this.getAvatar(selectedObj)}
+                title={this.getRacaDescricao(selectedObj.raca)}
+              />
+
+              <CardContent>
+                <Typography component="p">Nome: {selectedObj.nome}</Typography>
+                <Typography component="p">
+                  Doador: {selectedObj.user && selectedObj.user.name}
+                </Typography>
+              </CardContent>
+              <CardActions className={classes.actions} disableActionSpacing>
+                <Button
+                  variant="contained"
+                  style={MyTheme.palette.success}
+                  className={classes.button}
+                  onClick={() => this.handleWhatsApp(contato)}
+                >
+                  Contactar
+                  <Icon className={classes.rightIcon}>arrow_forward</Icon>
+                </Button>
+              </CardActions>
+            </Card>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Fechar
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+
   renderCards() {
     const { classes, listaPetAberto } = this.props;
 
@@ -117,6 +204,7 @@ class HomePage extends Component {
               variant="contained"
               style={MyTheme.palette.success}
               className={classes.button}
+              onClick={() => this.handleClickOpen(obj)}
             >
               Ver
               {/* This Button uses a Font Icon, see the installation instructions in the docs. */}
@@ -135,6 +223,7 @@ class HomePage extends Component {
 
     return (
       <Fragment>
+        {this.renderDialogView()}
         {/* <CustomizedSnackbars message="teste" variant="success" /> */}
         {error ? (
           <CustomizedSnackbars message={error.message} variant="error" />
