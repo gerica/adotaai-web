@@ -6,3 +6,10 @@ export const STATUS = ['aberto', 'fechado', 'doado', 'apagado'];
 
 // MENSAGENS
 export const MSG_001 = 'Operação realizada com sucesso.';
+
+// ROTAS
+export const ROUTER_PERFIL = '/perfil';
+export const ROUTER_LOGIN = '/login';
+export const ROUTER_LOGIN_PARAMS = '/login/:showSignin';
+export const ROUTER_HOME = '/home';
+export const ROUTER_DEFAULT = '/';

@@ -4,6 +4,7 @@ import FbSessionService from '../../Service/FbSessionService';
 import FbUsuarioService from '../../Service/FbUsuarioService';
 // import GoogleSigninService from '../../Service/GoogleSigninService';
 import { MSG_001 } from '../../Utils/constants';
+import GoogleSigninService from '../../Service/GoogleSigninService';
 
 function* criarUserCustom(user, payload) {
   const docUser = {
@@ -12,7 +13,7 @@ function* criarUserCustom(user, payload) {
     id: user.uid || user.id,
     name: user.displayName || user.name,
     email: user.email,
-    contato: payload && payload.contato,
+    contato: (payload && payload.contato) || null,
     photo: user.photo || user.photoURL
   };
   return yield call([FbUsuarioService, FbUsuarioService.save], docUser);
@@ -23,7 +24,8 @@ function* criarUserCustom(user, payload) {
  */
 function* signOutRequest() {
   try {
-    yield call([FbSessionService, FbSessionService.signOut]);
+    // yield call([FbSessionService, FbSessionService.signOut]);
+    yield call([GoogleSigninService, GoogleSigninService.signOut]);
     yield put(SessionActions.signOutSuccess());
   } catch (err) {
     yield put(SessionActions.signOutFailure(err));
@@ -43,7 +45,6 @@ function* updateRequest({ payload }) {
     yield put(SessionActions.addUser(user));
     yield put(SessionActions.success(MSG_001));
   } catch (err) {
-    console.log(err);
     yield put(SessionActions.failure(err));
   }
 }
@@ -62,7 +63,6 @@ function* loginRequest(payload) {
       [FbUsuarioService, FbUsuarioService.getByIdUser],
       user
     );
-    // eslint-disable-next-line no-underscore-dangle
     const newUser = { ...user._user, userCustom };
     user.userCustom = userCustom;
 
@@ -78,14 +78,20 @@ function* loginRequest(payload) {
  */
 function* signInGoogleRequest() {
   try {
-    // const { user } = yield call([GoogleSigninService, GoogleSigninService.signIn]);
-    // let userCustom = yield call([FbUsuarioService, FbUsuarioService.getByIdUser], user);
-    // if (!userCustom) {
-    //     userCustom = yield* criarUserCustom(user);
-    // }
-    // user.userCustom = userCustom;
-    // yield put(SessionActions.addUser(user));
-    // yield put(SessionActions.signInGoogleSuccess());
+    const { user } = yield call([
+      GoogleSigninService,
+      GoogleSigninService.signIn
+    ]);
+    let userCustom = yield call(
+      [FbUsuarioService, FbUsuarioService.getByIdUser],
+      { ...user, uid: user.providerData[0].uid }
+    );
+    if (!userCustom) {
+      userCustom = yield* criarUserCustom(user);
+    }
+    user.userCustom = userCustom;
+    yield put(SessionActions.addUser(user));
+    yield put(SessionActions.signInGoogleSuccess());
   } catch (err) {
     yield put(SessionActions.loginFailure(err));
   }
@@ -100,7 +106,7 @@ function* signInRequest({ payload }) {
     // console.log({ payload });
     yield call([FbSessionService, FbSessionService.signIn], payload);
     yield call([FbSessionService, FbSessionService.update], payload);
-    const { _user } = yield call([FbSessionService, FbSessionService.refresh]);
+    const _user = yield call([FbSessionService, FbSessionService.refresh]);
     const userCustom = yield* criarUserCustom(_user, payload);
     _user.userCustom = userCustom;
 
